@@ -1,10 +1,9 @@
-package ru.yandex.praktikum.pageObject;
+package ru.yandex.praktikum.tests;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import pageObjects.MainPage;
-import pageObjects.OrderPage;
+import pageobjects.MainPage;
+import pageobjects.OrderPage;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +27,6 @@ public class OrderPageTests {
     private final String expectedOrderSuccessText = "Заказ оформлен";
 
     /** Конструктор класса OrderPageTests */
-
     public OrderPageTests(
             String name,
             String surname,
@@ -52,7 +50,6 @@ public class OrderPageTests {
     }
 
     /** Параметры для запуска теста*/
-
     @Parameterized.Parameters(name = "Оформление заказа. Позитивный сценарий. Пользователь: {0} {1}")
     public static Object[][] setDataForOrder() {
         return new Object[][] {
@@ -65,8 +62,6 @@ public class OrderPageTests {
     public void startUp() {
         WebDriverManager.firefoxdriver().setup(); // Используем FirefoxDriver
         this.webDriver = new FirefoxDriver(); // Инициализация FirefoxDriver
-        //WebDriverManager.chromedriver().setup();
-        //this.webDriver = new ChromeDriver(); Здесь тест падает на подтверждении оформления заказа
         this.webDriver.get(mainPageUrl);
     }
 
@@ -78,7 +73,6 @@ public class OrderPageTests {
     }
 
     /**Тест для проверки процесса оформления заказа после нажатия на кнопку "Заказать" в шапке*/
-
     @Test
     public void orderWithHeaderButtonWhenSuccess() {
         MainPage mainPage = new MainPage(this.webDriver);
@@ -86,7 +80,7 @@ public class OrderPageTests {
 
         mainPage.clickOnCookieAcceptButton(); // Нажатие на кнопку принятия куки
         mainPage.clickOrderButtonHeader(); // Нажатие на кнопку "Заказать" в шапке
-        makeOrder(orderPage); // Оформление заказа
+        orderPage.makeOrder(this.name, this.surname, this.address, this.metro, this.phone, this.date, this.term, this.color, this.comment); // Оформление заказа
         // Проверка, что сообщение об успешном оформлении заказа соответствует ожидаемому
         MatcherAssert.assertThat(
                 "Problem with creating a new order",
@@ -96,7 +90,6 @@ public class OrderPageTests {
     }
 
     /** Тест для проверки процесса оформления заказа после нажатия на кнопку "Заказать" в теле сайта*/
-
     @Test
     public void orderWithBodyButtonWhenSuccess() {
         MainPage mainPage = new MainPage(this.webDriver);
@@ -104,33 +97,12 @@ public class OrderPageTests {
 
         mainPage.clickOnCookieAcceptButton();
         mainPage.clickOrderButtonBody(); // Нажатие на кнопку "Заказать" в теле сайта
-        makeOrder(orderPage); // Оформление заказа
+        orderPage.makeOrder(this.name, this.surname, this.address, this.metro, this.phone, this.date, this.term, this.color, this.comment); // Оформление заказа
         // Проверка, что сообщение об успешном оформлении заказа соответствует ожидаемому
         MatcherAssert.assertThat(
                 "Problem with creating a new order",
                 orderPage.getNewOrderSuccessMessage(),
                 containsString(this.expectedOrderSuccessText)
         );
-    }
-
-    /** Метод, описывающий процедуру оформления заказа*/
-
-    private void makeOrder(OrderPage orderPage) {
-        orderPage.waitForLoadForm();
-        // Установка значений в поля формы заказа
-        orderPage.setName(this.name);
-        orderPage.setSurname(this.surname);
-        orderPage.setAddress(this.address);
-        orderPage.setMetro(this.metro);
-        orderPage.setPhone(this.phone);
-
-        orderPage.clickNextButton(); // Нажатие на кнопку "Далее"
-        // Установка значений для даты, срока аренды, цвета и комментария
-        orderPage.setDate(this.date);
-        orderPage.setTerm(this.term);
-        orderPage.setColor(this.color);
-        orderPage.setComment(this.comment);
-
-        orderPage.makeOrder(); // Оформление заказа
     }
 }

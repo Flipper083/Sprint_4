@@ -1,16 +1,15 @@
-package pageObjects;
+package pageobjects;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
 
+import java.time.Duration;
 import java.util.List;
 
-/**Класс, описывающий страницу оформления заказа*/
-
+/** Класс, описывающий страницу оформления заказа */
 public class OrderPage {
     // Локаторы для элементов на странице оформления заказа
     private final WebDriver webDriver;
@@ -51,120 +50,116 @@ public class OrderPage {
     // Сообщение об успешном оформлении заказа
     private final By newOrderSuccessMessage = By.xpath(".//div[starts-with(@class, 'Order_Modal')]//div[(starts-with(@class,'Order_ModalHeader'))]");
 
-    /**Конструктор класса OrderPage*/
-
+    /** Конструктор класса OrderPage */
     public OrderPage(WebDriver webDriver) {
         this.webDriver = webDriver;
     }
 
-    /**Метод для ожидания загрузки формы заказа*/
-
+    /** Метод для ожидания загрузки формы заказа */
     public void waitForLoadForm() {
         new WebDriverWait(this.webDriver, Duration.ofSeconds(3))
                 .until(ExpectedConditions.visibilityOf(this.webDriver.findElement(this.orderForm)));
     }
 
-    /**Метод для ожидания загрузки элемента*/
-
+    /** Метод для ожидания загрузки элемента */
     private void waitForElementLoad(By elementToLoad) {
         new WebDriverWait(this.webDriver, Duration.ofSeconds(3))
                 .until(ExpectedConditions.visibilityOf(this.webDriver.findElement(elementToLoad)));
-
     }
 
-    /**Метод для установки значения в поле "Имя*/
-
+    /** Метод для установки значения в поле "Имя" */
     public void setName(String name) {
         this.webDriver.findElement(this.nameInput).sendKeys(name);
     }
 
-    /**Метод для установки значения в поле "Фамилия"*/
-
+    /** Метод для установки значения в поле "Фамилия" */
     public void setSurname(String surname) {
         this.webDriver.findElement(this.surnameInput).sendKeys(surname);
     }
 
-    /**Метод для установки значения в поле "Адрес"*/
-
+    /** Метод для установки значения в поле "Адрес" */
     public void setAddress(String address) {
         this.webDriver.findElement(this.addressInput).sendKeys(address);
     }
 
-    /**Метод для установки значения в поле "Станция метро"*/
-
+    /** Метод для установки значения в поле "Станция метро" */
     public void setMetro(String metro) {
         this.webDriver.findElement(this.metroInput).sendKeys(metro); // Ввод станции метро
         this.waitForElementLoad(this.metroList); // Ожидание загрузки списка метро
         this.chooseElementFromDropdown(this.metroListItems, metro); // Выбор станции из выпадающего списка
     }
 
-    /**Метод для установки значения в поле "Телефон"*/
-
+    /** Метод для установки значения в поле "Телефон" */
     public void setPhone(String phone) {
         this.webDriver.findElement(this.phoneInput).sendKeys(phone);
     }
 
-    /**Метод для нажатия на кнопку "Далее"*/
-
+    /** Метод для нажатия на кнопку "Далее" */
     public void clickNextButton() {
         this.webDriver.findElement(this.nextButton).click();
     }
 
-    /**Метод для установки значения в поле "Дата"*/
-
+    /** Метод для установки значения в поле "Дата" */
     public void setDate(String date) {
         this.webDriver.findElement(this.dateInput).sendKeys(date); // Ввод даты
         this.waitForElementLoad(this.dateSelected); // Ожидание выбора даты
         this.clickDateSelected(); // Нажатие на выбранную дату
     }
 
-    /**Метод для установки значения в поле "Срочность аренды"*/
-
+    /** Метод для установки значения в поле "Срочность аренды" */
     public void setTerm(String termToChoose) {
         this.clickTermDropdown();
         this.chooseElementFromDropdown(this.termDropdownOption, termToChoose);
     }
 
-    /**Метод для установки значения в поле "Цвет"*/
-
+    /** Метод для установки значения в поле "Цвет" */
     public void setColor(String colorToChoose) {
         this.chooseElementFromDropdown(this.colorLabels, colorToChoose);
     }
 
-    /**Метод для установки значения в поле "Комментарий"*/
-
+    /** Метод для установки значения в поле "Комментарий" */
     public void setComment(String comment) {
         this.webDriver.findElement(this.commentInput).sendKeys(comment);
     }
 
-    /**Метод для оформления заказа*/
+    /** Метод для оформления заказа */
+    public void makeOrder(String name, String surname, String address, String metro, String phone, String date, String term, String color, String comment) {
+        this.waitForLoadForm();
+        // Установка значений в поля формы заказа
+        this.setName(name);
+        this.setSurname(surname);
+        this.setAddress(address);
+        this.setMetro(metro);
+        this.setPhone(phone);
 
-    public void makeOrder() {
+        this.clickNextButton(); // Нажатие на кнопку "Далее"
+        // Установка значений для даты, срока аренды, цвета и комментария
+        this.setDate(date);
+        this.setTerm(term);
+        this.setColor(color);
+        this.setComment(comment);
+
         this.clickOrderButton(); // Нажатие на кнопку "Заказать"
         this.waitForElementLoad(this.acceptOrderButton); // Ожидание загрузки кнопки подтверждения заказа
         this.clickAcceptOrderButton(); // Нажатие на кнопку подтверждения заказа
     }
 
-    /**Метод для получения сообщения об успешном оформлении заказа*/
-
+    /** Метод для получения сообщения об успешном оформлении заказа */
     public String getNewOrderSuccessMessage() {
         return this.webDriver.findElement(this.newOrderSuccessMessage).getText();
     }
 
-    /**Метод для нажатия на кнопку "Заказать"*/
-
+    /** Метод для нажатия на кнопку "Заказать" */
     private void clickOrderButton() {
         this.webDriver.findElement(this.orderButton).click();
     }
 
-    /**Метод для нажатия на кнопку подтверждения заказа*/
-
+    /** Метод для нажатия на кнопку подтверждения заказа */
     private void clickAcceptOrderButton() {
         this.webDriver.findElement(this.acceptOrderButton).click();
     }
 
-    /**Метод для выбора элемента из выпадающего списка*/
-
+    /** Метод для выбора элемента из выпадающего списка */
     private void chooseElementFromDropdown(By dropdownElements, String elementToChoose) {
         List<WebElement> elementsFiltered = this.webDriver.findElements(dropdownElements); // Получение списка элементов
         for (WebElement element : elementsFiltered) {
@@ -175,14 +170,12 @@ public class OrderPage {
         }
     }
 
-    /**Метод для нажатия на выбранную дату в календаре*/
-
+    /** Метод для нажатия на выбранную дату в календаре */
     private void clickDateSelected() {
         this.webDriver.findElement(this.dateSelected).click();
     }
 
-    /**Метод для открытия списка срочностей аренды*/
-
+    /** Метод для открытия списка срочностей аренды */
     private void clickTermDropdown() {
         this.webDriver.findElement(this.termDropdownRoot).click();
     }
